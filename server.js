@@ -82,10 +82,11 @@ app.post("/login" , (req,res) => {
           mydb.collection('post').find({userid : { $in: result.neighborId }}).sort({date : -1}).toArray()
           .then( (neighbor) =>{
             post = neighbor;
+          
+            //세션에 유저 넣어주기
+            req.session.user = result;
+            res.render('index.ejs', {user: req.session.user , post : post});
           })
-          //세션에 유저 넣어주기
-          req.session.user = result;
-          res.render('index.ejs', {user: req.session.user , post : post});
         }else{
           //비밀번호가 틀리다면 login페이지
           res.render('login.ejs');
