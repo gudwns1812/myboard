@@ -17,10 +17,6 @@ mongoclient
   .catch((err) => {
     console.log(err);
   });
-
-
-conn.connect();
-
 const express = require("express");
 const app = express();
 const sha = require('sha256');
