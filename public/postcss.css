@@ -1,0 +1,54 @@
+.layout_content {
+    min-width: 1110px;
+    min-height: 220.8px;
+    width: auto;
+    margin: 0 100px;
+    padding: 0 15px;
+    border: 0px solid #272728;
+    box-sizing: border-box;
+  }
+  .list{
+    float: left;
+    width: 770px;
+    padding: 0;
+    border-bottom: 1px solid #eeeeef
+  }
+  .post {
+    width: 770px;
+    margin: 0 auto;
+    padding: 0;
+    border-width: 1px;
+    border-color: rgb(0, 0, 0);
+    border-style: solid;
+  }
+  .content {
+    float: left;
+    min-width: 770px;
+    width: auto;
+  }
+  .aside {
+    float: right;
+    width: 280px;
+    margin: 15px 0 70px 0;
+  }
+  .menu {
+    width: auto;
+    height: 48px;
+  }
+  .postdate {
+    text-align: center;
+  }
+  .title {
+    font-size : 24px;
+  }
+  .text {
+    font-family: '나눔고딕';
+    overflow: hidden;
+    text-overflow: ellipsis; /* 글 제목이 길 경우 생략 (...) 표시 */
+
+  }
+  .blog_name {
+    text-align: center;
+    font-size: 40px;
+    font-family: '나눔고딕';
+  }

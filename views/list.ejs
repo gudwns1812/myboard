@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>내 블로그</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <link rel="stylesheet" href="/postcss.css">
+  </head>
+  <body>
+    <%- include('menu.html') %>
+    <!-- 유저의 게시물들을 표형태로 표현-->
+    <%- include('posttable.ejs', {data : total}) %>
+    <p></p>
+    <p></p>
+    <div class="layout_content">
+      <p></p>
+      <div class="post content">
+        <% if (data) {%>
+          <strong class="title text"><%= data.title %></strong>
+          <p></p>
+          <!--유닉스 시간을 년 월 일로 변환하여 표시-->
+          <% let postdata = new Date(data.date) %>
+          <%= data.Username %><div class="postdate"><%= postdata.toLocaleDateString() %></div>
+          <!-- 유저의 아이디가 로그인한 유저의 이웃에 포함되어 있으면-->
+          <% if (LoginUser.neighborId.indexOf(user.userid) != -1) { %>
+            <button type="button" class="btn btn-outline-primary" disabled = 'disabled' >이웃 추가됨</button>
+            <p></p>
+          <!-- 로그인한 유저 자신의 블로그이면-->
+          <% }else if (LoginUser.userid == user.userid){ %>
+            <p></p>
+          <!-- 로그인한 유저와 블로그유저가 이웃상태가 아니라면-->
+          <% }else{ %>
+            <button class="neigh btn btn-outline-primary">이웃 추가</button>
+            <p></p>
+          <% } %>
+          <!-- 줄 바꿈을 표시하기 위해 br태그로 바꿔서 표시-->
+          <p class="text"><%- data.content.replace(/\n/g, '<br>') %></p>
+          <% if (data.type == null) { %>
+            <!-- 첨부파일 타입이 image일 경우-->
+          <% }else if(data.type.startsWith('image')) { %>
+            <img src="<%= data.path %>">
+            <!-- 첨부파일 타입이 txt파일일 경우-->
+          <%}else if (data.type == 'text/plain') { %>
+            <iframe src="<%= data.path %>" width="700" frameborder="0"></iframe>
+          <% } %>
+          <p></p>
+          <!-- 로그인한 유저 자신의 블로그일 경우-->
+        <% if (Auth){ %>
+          <button class="edit btn btn-outline-primary" data-id="<%= data._id %>">수정</button>
+          <button class="delete btn btn-outline-primary" data-id="<%=data._id %>">삭제</button>
+        <% } %>
+        <% }else{ %>
+            <p>
+                  게시글이 없습니다.
+              작성하기 버튼을 눌러서 첫 글을 작성해주세요.
+            </p>
+        <% } %> 
+      </div>
+      <!-- 새로운 글 작성하는 페이지로 가는 버튼-->
+      <div class="aside">
+        <button class="menu btn btn-outline-primary" onclick="location.href = '/save'">작성하기</button>
+        <% if(Auth){ %><p></p>
+        <!-- 자신의 블로그가 아니면 자신의 블로그로 가는 버튼-->
+        <% }else{ %>
+          <button type="button" onclick="location.href = '/list/<%=LoginUser.userid%>'" class = "menu btn btn-outline-primary">내 블로그 가기</button>
+        <% } %>
+        
+        <ul class="list-group list-group-horizontal">
+          <li class="list-group-item">이웃목록</li>
+        </ul>
+        <!-- 이웃목록이 비어있지 않다면-->
+        <% if(user.neighbor != undefined){ %>
+        <% for(let i = 0; i < user.neighbor.length; i+=2){ %>
+          <ul class="list-group list-group-horizontal">
+            <!-- 이웃 이름을 클릭하면 이웃 블로그로 이동-->
+            <li class="list-group-item"><a href="/list/<%=LoginUser.neighborId[i] %>"><%= LoginUser.neighbor[i] %></a></li>
+            <li class="list-group-item"><a href="/list/<%=LoginUser.neighborId[i+1] %>"><%= LoginUser.neighbor[i + 1] %></a></li>
+          </ul>
+        <% } %>
+        <% } %>
+      </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+    <script>
+      //삭제 버튼을 눌렀을때
+      $('.delete').click(function(e){
+          let sid = e.target.dataset.id;      //데이터의 _id
+          $.ajax({
+            type : 'post',
+            url : '/delete',
+            data : {_id : sid}
+          }).done(function(e){
+            //성공적으로 삭제가 되었다면 list메인화면으로 이동
+            location.href = "/list/<%=user.userid  %>";
+          })
+        })
+        //수정 버튼을 눌렀을 때
+      $('.edit').click((e) => {
+        console.log('클릭');
+        let sid = e.target.dataset.id;
+        //수정 페이지 이동
+        location.href = '/edit/'+ sid;
+      });
+      //이웃추가 버튼을 눌렀다면
+      $('.neigh').click((e) => {
+        // 유저의 이름, 닉네임, 로그인한유저의 아이디
+        let postid = '<%=user.userid %>';
+        let post_username = '<%=user.Username %>'; 
+        let loginid = '<%=LoginUser.userid%>';
+        $.ajax({
+          type: 'post',
+          url : '/saveNeighbor',
+          data : {postid : postid, postname : post_username, loginid : loginid}
+        }).done((e) => {
+          //성공적으로 이웃추가가 되었다면 새로고침
+          location.reload(true);
+        })
+      })
+    </script>
+  </body>
+</html>

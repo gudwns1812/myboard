@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="postcss.css">
+    <style>
+      td:first-child, th:first-child {
+        width: 545px; /* 글 제목의 최대 너비를 545px로 제한 */
+        overflow: hidden;
+        text-overflow: ellipsis; /* 글 제목이 길 경우 생략 (...) 표시 */
+        white-space: nowrap;
+      }
+      
+    </style>
+</head>
+<body>
+    <div class="blog_name"><strong><%= data[0].Username  %>의 Blog</strong></div>
+    <p></p>
+    <div class="post">
+        <table class="table table-hover table-striped container mt-4">
+          <thead>
+              <th>글 제목</th>
+              <th>작성일</th>
+          </thead>
+          <tbody>
+            <% for(let i = 0; i < data.length; i++){ %>
+              <tr>
+                <td><a href="/list/<%= data[i].userid %>/<%= data[i]._id %>"><%= data[i].title %></a></td>
+                <% let dateString = new Date(data[i].date) %>
+                <td ><%= dateString.toLocaleDateString()  %></td>
+              </tr>
+            <% } %> 
+          </tbody>
+        </table>
+    </div>
+</body>
+</html>
